@@ -1,0 +1,440 @@
+{
+    "type": "complex",
+    "name": "record",
+    "value": [{
+            "type": "int",
+            "name": "header_len",
+        }, {
+            "type": "complex",
+            "name": "header",
+            "length": "header_len",
+            "comment": "compressed with zlib, max level",
+            "value": [{
+                    "type": "string",
+                    "name": "game_version_name",
+                    "value": "VER 9.4"
+                }, {
+                    "type": "float",
+                    "name": "game_sub_version",
+                    "comments": "rounded to 2 decimals"
+                }, {
+                    "type": "float",
+                    "name": "parser_version",
+                    "comments": "1005 for actual 5.X versions, 1004 for 4.8 and 1000 for 4.7"
+                }, {
+                    "type": "bool",
+                    "name": "use_new_dlcs",
+                    "length": 4,
+                }, {
+                    "type": "int",
+                    "name": "games_count",
+                    "comments": "the number of games used, including AoK, AoC and new dlcs."
+                }, {
+                    "type": "array",
+                    "name": "games_ids",
+                    "length": "games_count",
+                    "value": [{
+                            "type": "int",
+                            "name": "game_id",
+                            "choices": {
+                                "0": "Age of King",
+                                "1": "Age of Conquerors",
+                                "2": "Age of King (updated)",
+                                "3": "Age of Conquerors (updated)",
+                                "4": "Forgotten Empires",
+                                "5": "Africans Kingdoms",
+                                "6": "Rise of the Rajas"
+                            },
+                            "comments": "Updated versions of AoK/AoC are the one used when playing games with new dlcs."
+                        }]
+                }, {
+                    "type": "int",
+                    "name": "difficulty",
+                    "choices": {
+                        "0": "Hardest",
+                        "1": "Hard",
+                        "2": "Moderate",
+                        "3": "Standard",
+                        "4": "Easy"
+                    }
+                }, {
+                    "type": "int",
+                    "name": "map_size",
+                    "choices": {
+                        "0": "Tiny (2 players)",
+                        "1": "Small (3 players)",
+                        "2": "Medium (4 players)",
+                        "3": "Normal (6 players)",
+                        "4": "Large (8 players)",
+                        "5": "Giant"
+                    }
+                }, {
+                    "type": "int",
+                    "name": "map_id"
+                }, {
+                    "type": "int",
+                    "name": "visibility",
+                    "choices": {
+                        "0": "Standard",
+                        "1": "Explored",
+                        "2": "Visible"
+                    }
+                }, {
+                    "type": "int",
+                    "name": "victory_conditions",
+                    "choices": "TODO"
+                }, {
+                    "type": "int",
+                    "name": "resources_level",
+                    "choices": "TODO"
+                }, {
+                    "type": "int",
+                    "name": "starting_age",
+                    "choices": "TODO"
+                }, {
+                    "type": "int",
+                    "name": "ending_age",
+                    "choices": "TODO"
+                }, {
+                    "type": "int",
+                    "name": "game_type",
+                    "choices": "TODO"
+                }, {
+                    "type": "int",
+                    "name": "resources_level",
+                    "choices": "TODO"
+                }, {
+                    "type": "bytes",
+                    "name": "separator_0",
+                    "value": "a3 5f 02 00"
+                }, {
+                    "type": "bytes",
+                    "name": "separator_0",
+                    "value": "a3 5f 02 00",
+                    "comments": "Starting here 4.X is different from 5.X."
+                }, {
+                    "type": "float",
+                    "name": "speed"
+                }, {
+                    "type": "int",
+                    "name": "treaty_length"
+                }, {
+                    "type": "int",
+                    "name": "population_limit"
+                }, {
+                    "type": "short",
+                    "name": "players_count"
+                }, {
+                    "type": "unknown",
+                    "size": 6,
+                    "values_encountered": ["00 00 00 00 00 00"]
+                }, {
+                    "type": "short",
+                    "name": "victory_limit_value",
+                    "comments": "Used to store the time/points limit in case of time/score limit victory."
+                }, {
+                    "type": "unknown",
+                    "size": 4,
+                    "values_encountered": ["00 00 a3 5f"]
+                }, {
+                    "type": "unknown",
+                    "size": 2,
+                    "values_encountered": ["02 00"]
+                }, {
+                    "type": "unknown",
+                    "size": 2,
+                    "values_encountered": ["01 00"]
+                }, {
+                    "type": "bool",
+                    "name": "not_team_together",
+                    "comments": "Reverse to get \"Team together\" value."
+                }, {
+                    "type": "bool",
+                    "name": "all_techs"
+                }, {
+                    "type": "unknown",
+                    "size": 1,
+                    "values_encountered": ["00", "01"]
+                }, {
+                    "type": "bool",
+                    "name": "lock_teams"
+                }, {
+                    "type": "bool",
+                    "name": "lock_speed"
+                }, {
+                    "type": "unknown",
+                    "size": 1,
+                    "values_encountered": ["01"]
+                }, {
+                    "type": "bool",
+                    "name": "allow_cheats"
+                }, {
+                    "type": "unknown",
+                    "size": 1,
+                    "values_encountered": ["01"]
+                }, {
+                    "type": "unknown",
+                    "size": 1,
+                    "values_encountered": ["01"]
+                }, {
+                    "type": "unknown",
+                    "size": 1,
+                    "values_encountered": ["01"]
+                }, {
+                    "type": "bytes",
+                    "name": "separator_0",
+                    "value": "a3 5f 02 00"
+                }, {
+                    "type": "array",
+                    "name": "palyers_data",
+                    "length": 8,
+                    "value": [{
+                            "type": "unknown",
+                            "size": 4,
+                            "values_encountered": ["03 00 00 00"]
+                        }, {
+                            "type": "int",
+                            "name": "number",
+                            "comments": "Add 1 to get the number player pick to choose a color."
+                        }, {
+                            "type": "unknown",
+                            "size": 1,
+                            "values_encountered": ["ff"]
+                        }, {
+                            "type": "int",
+                            "name": "dat_file_crc"
+                        }, {
+                            "type": "tiny",
+                            "name": "mp_game_version"
+                        }, {
+                            "type": "unknown",
+                            "size": 4,
+                            "values_encountered": ["00 00 00 00", "01 00 00 00", "03 00 00 00"]
+                        }, {
+                            "type": "int",
+                            "name": "civilisation",
+                            "choices": "TODO"
+                        }, {
+                            "type": "short",
+                            "name": "ai_type_size"
+                        }, {
+                            "type": "bytes",
+                            "name": "separator_1",
+                            "value": "00 a6"
+                        }, {
+                            "type": "chars",
+                            "name": "ai_type",
+                            "size": "ai_type_size",
+                            "comments": "Variable name could be precised."
+                        }, {
+                            "type": "unknown",
+                            "size": 1,
+                            "comments": "It seems to be a random value for generating AI."
+                        }, {
+                            "type": "short",
+                            "name": "ai_name_size"
+                        }, {
+                            "type": "bytes",
+                            "name": "separator_1",
+                            "value": "00 a6"
+                        }, {
+                            "type": "chars",
+                            "name": "ai_name",
+                            "size": "ai_name_size",
+                            "comments": "Special AI name used in custom scenarios in place of generated ones."
+                        }, {
+                            "type": "short",
+                            "name": "player_name_size"
+                        }, {
+                            "type": "bytes",
+                            "name": "separator_1",
+                            "value": "00 a6"
+                        }, {
+                            "type": "chars",
+                            "name": "player_name",
+                            "size": "player_name_size"
+                        }, {
+                            "type": "int",
+                            "name": "hummanity",
+                            "choices": {
+                                "1": "None",
+                                "2": "Player",
+                                "3": "AI"
+                            }
+                        }, {
+                            "type": "int",
+                            "name": "steam_id"
+                        }, {
+                            "type": "int",
+                            "name": "player_id",
+                            "comments": "From 0 to 7, the id of the player."
+                        }]
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 1
+                }, {
+                    "type": "unknown",
+                    "size": 1
+                }, {
+                    "type": "unknown",
+                    "size": 1
+                }, {
+                    "type": "unknown",
+                    "size": 1
+                }, {
+                    "type": "bytes",
+                    "name": "separator_0",
+                    "value": "a3 5f 02 00"
+                }, {
+                    "type": "unknown",
+                    "size": 1
+                }, {
+                    "type": "unknown",
+                    "size": 1
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "short",
+                    "name": "scenario_name_size"
+                }, {
+                    "type": "bytes",
+                    "name": "separator_1",
+                    "value": "00 a6"
+                }, {
+                    "type": "chars",
+                    "name": "scenario_name",
+                    "size": "scenario_name_size",
+                    "comments": "Or is it the custom map name ?"
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "short",
+                    "name": "map_name_size"
+                }, {
+                    "type": "bytes",
+                    "name": "separator_1",
+                    "value": "00 a6"
+                }, {
+                    "type": "chars",
+                    "name": "map_name",
+                    "size": "map_name_size"
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "short",
+                    "name": "unknown_name_size"
+                }, {
+                    "type": "bytes",
+                    "name": "separator_1",
+                    "value": "00 a6"
+                }, {
+                    "type": "chars",
+                    "name": "unknown_name",
+                    "size": "unknown_name_size",
+                    "comments": "Some name to determine."
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 16
+                }, {
+                    "type": "short",
+                    "name": "game_name_size"
+                }, {
+                    "type": "bytes",
+                    "name": "separator_1",
+                    "value": "00 a6"
+                }, {
+                    "type": "chars",
+                    "name": "game_name",
+                    "size": "game_name_size",
+                    "comments": "The game name as shown in the lobby."
+                }, {
+                    "type": "short",
+                    "name": "unknown_name_size"
+                }, {
+                    "type": "bytes",
+                    "name": "separator_1",
+                    "value": "00 a6"
+                }, {
+                    "type": "chars",
+                    "name": "unknown_name",
+                    "size": "unknown_name_size",
+                    "comments": "Some name to determine."
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "short",
+                    "name": "unknown_name_size"
+                }, {
+                    "type": "bytes",
+                    "name": "separator_1",
+                    "value": "00 a6"
+                }, {
+                    "type": "chars",
+                    "name": "unknown_name",
+                    "size": "unknown_name_size",
+                    "comments": "Some name to determine."
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "unknown",
+                    "size": 2
+                }, {
+                    "type": "short",
+                    "name": "unknown_items_count"
+                }, {
+                    "type": "unknown",
+                    "size": 4
+                }, {
+                    "type": "array",
+                    "name": "unknown_items",
+                    "size": "unknown_items_count",
+                    "value": [{
+                            "type": "short",
+                            "name": "unknown_name_size"
+                        }, {
+                            "type": "bytes",
+                            "name": "separator_2",
+                            "size": 2,
+                            "value": "00 00"
+                        }, {
+                            "type": "chars",
+                            "name": "unknown_name",
+                            "size": "unknown_name_size"
+                        }]
+                }]
+        }, {
+
+    }]
+}
