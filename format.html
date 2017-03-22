@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Age Of Empires 2 - Records Format</title>
+    </head>
+    <style>
+        h1, h2 {
+            font-family: sans-serif;
+        }
+        main>div>h2 {
+            text-transform: capitalize;
+        }
+        main>div>table {
+            background: #fff3e0;
+            font-family: monospace;
+            width: 100%;
+            border-collapse: collapse;
+        }
+        main>div>table>tr>td {
+            padding: 0;
+            border: 1px solid grey;
+            width: 20%;
+        }
+        main>div>table>tr>td:first-of-type>span {
+            padding: 1px;
+            background: #83e27c;
+            display: inline-block;
+            width: calc(100% - 1px);
+        }
+        main>div>table>tr>td:last-of-type {
+            width: inherit;
+        }
+    </style>
+    <body>
+        <main></main>
+        <script src='https://code.jquery.com/jquery-3.2.1.min.js'></script>
+        <script src='https://cdnjs.cloudflare.com/ajax/libs/jquery-url-parser/2.3.1/purl.min.js'></script>
+        <script>
+            /* Metadata */
+            var versions = {
+                '5': '5.1',
+                '5.1': '5.1'
+            };
+            var sizes = {
+                'complex': 'var',
+                'array': 'var',
+                'tiny': 1,
+                'short': 2,
+                'int': 4,
+                'long long': 8,
+                'float': 4,
+                'bool': 1,
+                'complex': 'until the end',
+                'string': 'until \\x00 encountered'
+            };
+
+            function selectFormat() {
+                var version = versions[window.location.hash.substr(1) || 5];
+                $.get('format'+version+'.json').then(function(format) {
+
+                    var main = $('main');
+
+                    /* Page title */
+                    var h1 = $('<h1>AoE2 Records - Version ' + version + '</h1>');
+                    main.append(h1);
+
+                    /* Complex structures */
+                    var complexes = [format];
+                    while(complexes.length > 0) {
+                        var complex = complexes.shift();
+                        displayComplex(main, complex, complexes);
+                    }
+                });
+            }
+
+            function displayComplex(dom, complex, complexes) {
+                    var div = $('<div></div>');
+                    var h2 = $('<h2>' + complex.name.replace('_', ' ') + '</h2>');
+                    div.append(h2);
+                    var table = $('<table></table>');
+                    for(var k = 0; k < complex.value.length; ++k) {
+                        displayElement(table, complex.value[k], 0, complexes);
+                    }
+                    div.append(table);
+                    dom.append(div);
+            }
+
+            function displayElement(dom, element, indent, complexes) {
+                var row = $('<tr></tr>');
+                var type = $('<td></td>');
+                var span = $('<span>' + element.type + '</span>');
+                type.append(span);
+                type.css('padding-left', indent * 16 + 'px');
+                row.append(type);
+                var name = $('<td>' + element.name + '</td>');
+                row.append(name);
+                var size = $('<td>' + (element.size || sizes[element.type]) + '</td>');
+                row.append(size);
+                dom.append(row);
+
+                if(element.type == 'array') {
+                    for(var k = 0; k < element.value.length; ++k) {
+                        displayElement(dom, element.value[k], indent+1);
+                    }
+                }
+                else if(element.type == 'complex') {
+                    complexes.push(element);
+                }
+            }
+
+            selectFormat();
+            window.onhashchange = selectFormat;
+        </script>
+    </body>
+</html>
