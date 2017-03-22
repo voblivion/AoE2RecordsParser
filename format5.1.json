@@ -189,7 +189,7 @@
                     "value": "a3 5f 02 00"
                 }, {
                     "type": "array",
-                    "name": "palyers_data",
+                    "name": "players_data",
                     "size": 8,
                     "value": [{
                             "type": "unknown",
@@ -215,7 +215,7 @@
                             "values_encountered": ["00 00 00 00", "01 00 00 00", "03 00 00 00"]
                         }, {
                             "type": "int",
-                            "name": "civilisation",
+                            "name": "civilization",
                             "choices": "TODO"
                         }, {
                             "type": "short",
