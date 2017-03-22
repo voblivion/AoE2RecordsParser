@@ -361,7 +361,7 @@ if __name__ == '__main__':
     grps = []
     vals = []
     for k in range(0, files_count):
-        f = open('game{:03}.aoe2record'.format(files_start+k), 'rb')
+        f = open('records/game{:03}.aoe2record'.format(files_start+k), 'rb')
         files.append(f)
         grps.append(GameRecordParser(f))
 
