@@ -3,7 +3,7 @@
     "name": "record",
     "value": [{
             "type": "int",
-            "name": "header_len",
+            "name": "header_len"
         }, {
             "type": "complex",
             "name": "header",
@@ -24,7 +24,7 @@
                 }, {
                     "type": "bool",
                     "name": "use_new_dlcs",
-                    "size": 4,
+                    "size": 4
                 }, {
                     "type": "int",
                     "name": "games_count",
