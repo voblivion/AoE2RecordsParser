@@ -81,28 +81,22 @@
                     }
                 }, {
                     "type": "int",
-                    "name": "victory_conditions",
-                    "choices": "TODO"
+                    "name": "victory_conditions"
                 }, {
                     "type": "int",
-                    "name": "resources_level",
-                    "choices": "TODO"
+                    "name": "resources_level"
                 }, {
                     "type": "int",
-                    "name": "starting_age",
-                    "choices": "TODO"
+                    "name": "starting_age"
                 }, {
                     "type": "int",
-                    "name": "ending_age",
-                    "choices": "TODO"
+                    "name": "ending_age"
                 }, {
                     "type": "int",
-                    "name": "game_type",
-                    "choices": "TODO"
+                    "name": "game_type"
                 }, {
                     "type": "int",
-                    "name": "resources_level",
-                    "choices": "TODO"
+                    "name": "resources_level"
                 }, {
                     "type": "bytes",
                     "name": "separator_0",
@@ -215,8 +209,7 @@
                             "values_encountered": ["00 00 00 00", "01 00 00 00", "03 00 00 00"]
                         }, {
                             "type": "int",
-                            "name": "civilization",
-                            "choices": "TODO"
+                            "name": "civilization"
                         }, {
                             "type": "short",
                             "name": "ai_type_size"

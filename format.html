@@ -4,6 +4,9 @@
         <title>Age Of Empires 2 - Records Format</title>
     </head>
     <style>
+        html, body {
+            height: 100%;
+        }
         h1, h2 {
             font-family: sans-serif;
         }
@@ -19,7 +22,7 @@
         main>div>table>tr>td {
             padding: 0;
             border: 1px solid grey;
-            width: 20%;
+            width: 15%;
         }
         main>div>table>tr>td:first-of-type>span {
             padding: 1px;
@@ -78,6 +81,8 @@
                     var h2 = $('<h2>' + complex.name.replace('_', ' ') + '</h2>');
                     div.append(h2);
                     var table = $('<table></table>');
+                    var tr = $('<tr><th>Type</th><th>Name</th><th>Size</th><th>Values/Choices</th><th>Comments</th></tr>');
+                    table.append(tr);
                     for(var k = 0; k < complex.value.length; ++k) {
                         displayElement(table, complex.value[k], 0, complexes);
                     }
@@ -96,6 +101,20 @@
                 row.append(name);
                 var size = $('<td>' + (element.size || sizes[element.type]) + '</td>');
                 row.append(size);
+                var value = $('<td></td>');
+                if(element.value !== undefined && element.type !== 'complex' && element.type !== 'array') {
+                    value.text(element.value);
+                }
+                else if(element.choices !== undefined) {
+                    var choices = '';
+                    for(var k in element.choices) {
+                        choices += ', ' + k + ' = ' + element.choices[k];
+                    }
+                    value.text(choices.substr(2));
+                }
+                row.append(value);
+                var comments = $('<td>' + (element.comments || '') + '</td>');
+                row.append(comments);
                 dom.append(row);
 
                 if(element.type == 'array') {
