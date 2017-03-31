@@ -5,6 +5,10 @@
             "type": "int",
             "name": "header_len"
         }, {
+            "type": "int",
+            "name": "next_header_pos",
+            "values_encountered": [0]
+        }, {
             "type": "complex",
             "name": "header",
             "size": "header_len",
@@ -20,7 +24,7 @@
                 }, {
                     "type": "float",
                     "name": "parser_version",
-                    "comments": "1005 for actual 5.X versions, 1004 for 4.8 and 1000 for 4.7"
+                    "comments": "Seems to be parser's version : 1005 for actual 5.X versions, 1004 for 4.8 and 1000 for 4.7"
                 }, {
                     "type": "bool",
                     "name": "use_new_dlcs",
