@@ -10,7 +10,9 @@ class ObjectWrapper:
         self.pos = 0
         self.data = object
 
-    def read(self, count=1):
+    def read(self, count=None):
+        if count is None:
+            count = len(self.data) - self.pos
         rep = self.data[self.pos:self.pos+count]
         self.pos += count
         return rep
@@ -112,7 +114,7 @@ class DataWrapper:
 
     def readString(self, length_size=0):
         rep = self.data.readUntil(b'\x00')
-        return rep.decode('utf-8')
+        return rep[:-1].decode('utf-8')
 
     def read(self, *args, **kwargs):
         return self.data.read(*args, **kwargs)
@@ -126,35 +128,32 @@ class DataWrapper:
     def unpack(self, format, length):
         return struct.unpack(format, self.data.read(length))[0]
 
-        
-
 class DataParser:
-    def __init__(self, data):
+    def __init__(self, data, meta=None):
         self.data = DataWrapper(data)
+        self.meta = meta
 
     def run(self):
         raise NotImplementedError
 
 class GameRecordParser(DataParser):
-    # FIXME
-    def run(self, idx):
+    def run(self):
         data = self.data
 
         header_len = data.readInt()
-        #data.seek(-4, 1)
-        #print(' '.join('{:02x}'.format(x) for x in data.read(4)), header_len)
         next_pos = data.readInt()
         
         compressed = data.read(header_len - 8)
         header_data = zlib.decompress(compressed, -zlib.MAX_WBITS)
 
-        hp = HeaderParser(header_data)
-        # FIXME
-        return hp.run(idx)
+        hp = HeaderParser(header_data)     
+        hp.run()
+
+        return {}
 
 class HeaderParser(DataParser):
     # FIXME
-    def run(self, idx):
+    def run(self):
         data = self.data
 
         version_name = data.readString()
@@ -163,12 +162,12 @@ class HeaderParser(DataParser):
         version = data.readFloat() # 1000 for 4.7, 1004 for 4.8, 1005 for 5.1 and 5.2
         ukn = data.readInt() # 1000
         if version != 1005:
-            return []
+            return {}
 
         has_special_dlcs = data.readBool(4)
         games_count = data.readInt()
         games_ids = []
-        for k in range(0, games_count):
+        for _ in range(0, games_count):
             games_ids.append(data.readInt())
 
         difficulty = data.readInt()
@@ -195,7 +194,7 @@ class HeaderParser(DataParser):
         ukn = data.read(6) # 0
 
         victory_limit_value = data.readShort()
-        ukn = data.readInt() # 1604517888
+        ukn42 = data.readInt() # 1604517888
 
         ukn = data.readShort() # 2
         ukn = data.readShort() # 1
@@ -233,10 +232,10 @@ class HeaderParser(DataParser):
             mp_game_version = data.readTiny()
 
             # ----
-            ukn3 = data.readInt() # 0, 1, 3 ?
+            ukn3 = data.readInt() # 0, 1, 3 ? AI Script ID ?
 
             # ----
-            civilisation = data.readInt()
+            civilization = data.readInt()
 
             ai_type_size = data.readShort()
             cst = data.read(2) # 2656
@@ -245,32 +244,32 @@ class HeaderParser(DataParser):
             # ----
             ukn4 = data.readTiny() # Random number for AI ?
 
-            ai_name_size = data.readShort()
+            tribe_name_size = data.readShort()
             cst = data.read(2) # 2656
-            ai_name = data.readChars(ai_name_size)
+            tribe_name = data.readChars(tribe_name_size)
 
             player_name_size = data.readShort()
             cst = data.read(2) # 2656
             player_name = data.readChars(player_name_size)
 
             hummanity = data.readInt() # 1 = None, 2 = Player, 4 = AI
-            steam_id = data.readLongLong() # related to name ?
+            steam_id = data.readLongLong()
 
             player_id = data.readInt()
 
             players.append({
                     'id': player_id,
                     'num': player_num,
-                    'civilisation': civilisation,
+                    'civilization': civilization,
                     'ai_type': ai_type,
-                    'ai_name': ai_name,
+                    'tribe_name': tribe_name,
                     'name': player_name,
                     'hummanity': hummanity,
                     'steam_id': steam_id
                 })
 
-        ukn = data.readInt()
-        ukn = data.readInt()
+        ukn = data.readInt() # 0
+        ukn = data.readInt() # 0
         ukn = data.readBool()
         ukn = data.readBool()
         ukn = data.readBool()
@@ -280,8 +279,8 @@ class HeaderParser(DataParser):
 
         ukn = data.readBool()
         ukn = data.readBool()
-        ukn0 = data.readInt()
-        ukn1 = data.read(4)
+        ukn0 = data.readInt() # 0
+        ukn1 = data.read(4) # != 0 if SP game
 
         scenario_name_size = data.readShort()
         cst = data.read(2) # 2656
@@ -299,7 +298,7 @@ class HeaderParser(DataParser):
 
         ukn_name_size = data.readShort()
         cst = data.read(2) # 2656
-        ukn_name = data.readChars(ukn_name_size)
+        ukn_name0 = data.readChars(ukn_name_size)
 
         ukn6 = data.read(4)
         ukn7 = data.read(4)
@@ -311,82 +310,297 @@ class HeaderParser(DataParser):
 
         ukn_name_size = data.readShort()
         cst = data.read(2) # 2656
-        ukn_name = data.readChars(ukn_name_size)
+        ukn_name1 = data.readChars(ukn_name_size)
 
         ukn9 = data.read(4)
         ukn10 = data.read(4)
 
         ukn_name_size = data.readShort()
         cst = data.read(2) # 2656
-        ukn_name = data.readChars(ukn_name_size)
+        ukn_name2 = data.readChars(ukn_name_size)
 
         ukn1 = data.read(4)
-        ukn2 = data.read(4)
-        ukn3 = data.readShort() # ?
-        entries_count = data.readShort()
-        ukn4 = data.read(4)
+        contains_ai_scripts = data.readBool(4)
+        if contains_ai_scripts:
+            ukn3 = data.readShort() # ?
+            entries_count = data.readShort()
+            ukn4 = data.read(2)
+            ukn5 = data.read(2)
 
-        for k in range(0, entries_count):
-            ukn_name_size = data.readShort()
-            cst = data.read(2) # 0000
-            ukn_name = data.readChars(ukn_name_size)
-    
-        ukn = data.readShort()
-        ukn = data.readShort()
-        ukn = data.readShort()
-        ukn = data.read(16)
-        ukn = data.read(4)
+            ai_strings = []
+            for k in range(0, entries_count):
+                ai_string_size = data.readShort()
+                cst = data.read(2) # 0000
+                ai_string = data.readChars(ai_string_size)
+                ai_strings.append(ai_string)
+
+            ukn9 = data.read(6) # 3 uknown shorts
+
+            ais = []
+            for _ in range(0, 8):
+                is_ai = data.readBool(4)
+                ai_id = data.readInt()
+                ukn = data.read(2)
+                ai_rules_count = data.readShort()
+                ukn = data.read(4)
+                ai_rules = []
+                for _ in range(0, ai_rules_count):
+                    rule_data = data.read(784)
+                    pass # FIXME
+                    arp = AIRuleParser(rule_data)
+                    rule = arp.run()
+                    ai_rules.append(rule)
+
+                ais.append({
+                    'id': ai_id,
+                    'rules_count': ai_rules_count,
+                    'rules': ai_rules,
+                })
+
+            for k in range(0, 8):
+                ukn = data.readInt() # 100
+                ukn = data.read(4) # random ?
+            ukn = data.readFloat() # ~(2)0.14 ?
+            ukn0 = data.readFloat() # ~(2)0.29 ?
+            ukn = data.read(6756) # ? To work on
+
+        ukn = data.read(26) # 00 ...
+        ukn1 = data.readFloat(4) # Again ??
+        ukn = data.read(1) # ?
+        ukn = data.readInt() # [1800, 6100]
+        ukn = data.read(4) # fe ff ff ff
+        ukn = data.readInt() # [0, 33000]
+        ukn = data.readInt() # [0, 33000]
+        point_of_view = data.readShort() # 1 -> 8
+        all_players_count = data.readTiny() # includes Gaïa
+
+        ukn = data.read(60)
+        map_width = data.readInt()
+        map_height = data.readInt()
+        map_zones_count = data.readInt()
+        map_zones = []
+        for _ in range(0, map_zones_count):
+            ukn0 = data.readInt() # <= map_width * map_height
+            ukn1 = data.read(map_width*map_height*2) # ?
+            ukn = data.read(2044)
+            ukn2 = data.readInt()
+            for _ in range(0, ukn2):
+                ukn = data.readFloat() # 1.0, 2.0, 3.0, etc. ? then ?
+            ukn3 = data.readInt()
+
+        ukn = data.readTiny() # visibility ?
+        ukn = data.readTiny() # fog of war ?
+
+        map_infos = []
+        ukn = data.read(map_width*map_height*2) # id + élévation
+
+        ukn_count = data.readInt() # 3 or 5 ?
+        ukn0 = data.readInt() # 8 ?
+
+        for _ in range(0, ukn_count):
+            ukn = data.readShort()
+            ukn = data.readShort()
+
+        for _ in range(0, 5):
+            ukn = data.read(4)
+            ukn = data.read(4)
+            ukn = data.read(4)
+
         ukn = data.read(4)
 
-        return [ukn, data.read(idx)]
+        for _ in range(0, ukn_count):
+            ukn = data.read(4)
+            ukn = data.read(4)
+            ukn = data.read(4)
+
+        map_width = data.readInt()
+        map_height = data.readInt()
+
+        ukn = data.read(map_height * map_width * 4)
+
+        ukn = data.read(8) # 00 ..
+        ukn = data.readInt() # 40600 ?
+
+        ukn = data.read(2) # 02 0b
+
+        players_info = []
+        for _ in range(0, 1):
+            diplomacy_from = []
+            for _ in range(0, players_count + 1):
+                diplomacy = data.readTiny()
+                diplomacy_from.append(diplomacy)
+
+            diplomacy_to = []
+            for _ in range(0, 9):
+                diplomacy = data.readInt()
+                diplomacy_to.append(diplomacy)
+
+            ukn = data.read(5)
+
+            name_size = data.readShort()
+            name = data.readString() #
+
+            ukn1 = data.readTiny() # 22
+            civilization_headers_count = data.readInt()
+            ukn3 = data.readTiny() # 33
+
+            # Civilization's header
+            food = data.readFloat()
+            wood = data.readFloat()
+            stone = data.readFloat()
+            gold = data.readFloat()
+            headroom = data.readFloat() # FAIL ?
+            ukn1 = data.readFloat()
+            ukn2 = data.readFloat()
+            ukn3 = data.readFloat()
+            ukn4 = data.readFloat()
+            ukn5 = data.readFloat()
+            ukn6 = data.readFloat()
+            population = data.readFloat()
+            for _ in range(0, 20):
+                ukn = data.readFloat()
+            max_population = data.readFloat() # FAIL ?
+            ukn = data.readFloat()
+            ukn = data.readFloat()
+            ukn = data.readFloat() # 1.6
+            farm_food_amount = data.readFloat() # FAIL ?
+            civilian_population = data.readFloat() # FAIL ?
+            ukn = data.readFloat() # 0
+            ukn = data.readFloat() # 178
+            military_population = data.readFloat() # FAIL ?
+            for _ in range(0, 50):
+                ukn = data.readFloat()
+            food_bonus = data.readFloat()
+            wood_bonus = data.readFloat()
+            stone_bonus = data.readFloat()
+            gold_bonus = data.readFloat()
+
+            for _ in range(0, 103):
+                ukn = data.readFloat()
+
+            if has_special_dlcs:
+                for _ in range(0, 13):
+                    ukn = data.readFloat()
+
+        ukn = data.read(1) # 0b
+        ukn = data.readFloat()
+        ukn = data.readFloat()
+        ukn = data.read(9)
+        ukn = data.read(4)
+
+        return {}
+
+class WorkingParser(DataParser):
+    def run(self, depth):
+        pass
+
+class AIRuleParser(DataParser):
+    def run(self):
+        data = self.data
+
+
+        ukn = data.read(4) # 01 00 00 00
+        ukn = data.read(4) # 01 00 00 00
+        id = data.readShort()
+        sep = data.read(2) # ff ff
+        conditions_count = data.readTiny()
+        terms_count = data.readTiny()
+        terms = []
+        for _ in range(0, terms_count):
+            term_data = data.read(24)
+            artp = AIRuleTermParser(term_data)
+            term = artp.run()
+            terms.append(term)
+
+        # Then there is few times 00 00 00 00 ff ff ff ff 00 00 00 00 00 00 00 00
+
+        return {
+            'id': id,
+            'conditions_count': conditions_count,
+            'terms_count': terms_count,
+            'terms': terms,
+        }
+
+class AIRuleTermParser(DataParser):
+    def run(self):
+        data = self.data
+        argument_0 = data.read(4)
+        argument_1 = data.read(4)
+        argument_2 = data.read(4)
+        argument_3 = data.read(4)
+        argument_4 = data.read(4)
+        argument_5 = data.read(4)
+
+        # FIXME
+        return {
+            '0': pretty(argument_0),
+            '1': pretty(argument_1),
+            '2': pretty(argument_2),
+            '3': pretty(argument_3),
+            '4': pretty(argument_4),
+            '5': pretty(argument_5),
+        }
 
 def pretty(data, force=False):
     if isinstance(data, bytes) and (True or force):
         return ' '.join('{:02x}'.format(x) for x in data)
     else:
         return data
-# 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 26, 27, 38, 39, 40, 41, 45 -> 0
-# 33, 34, 35, 36 -> 22
-# 21 -> 50
-# 19 -> 225
-# 14, 16, 17 -> 229
-# 0 -> 924
 
 if __name__ == '__main__':
-    files_start = 0
-    files_count = 49
-    max_idx = 8
-    exceptions = [12, 13, 30, 31, 32, 44]
-    files = []
-    grps = []
-    vals = []
-    for k in range(0, files_count):
-        f = open('records/game{:03}.aoe2record'.format(files_start+k), 'rb')
-        files.append(f)
-        grps.append(GameRecordParser(f))
+    # Select which records to use
+    start = 0
+    count = 48
+    exceptions = [12, 13, 30, 31, 32]
+    ids = [k for k in range(start, count) if k not in exceptions]
 
-    idx = 1
-    keep = True
-    counter = 22
-    reps = []
-    while keep:
-        reps = []
-        diff = False
-        for k in range(0, files_count):
-            files[k].seek(0)
-            rep = grps[k].run(idx)
-            reps.append(rep)
-            if k not in exceptions and len(reps) > 0 and reps[0][-1] != rep[-1]:
-                diff = True
-        if diff:
-            counter -= 1
-            if counter < 0:
-                keep = False
-        idx += 1
-        if idx > max_idx:
-            keep = False
+    # Choose analyze depth
+    depth = 20
+    max_depth = 20
+    depth_step = 1
+    depth_after = 20
+    partial = False
 
-    print(idx - 1)
-    for k in range(0, files_count):
-        if k not in exceptions:
-            print('{:02}'.format(files_start+k), [pretty(x) for x in reps[k]])
+    records = {}
+    partials = {}
+    remains = {}
+    parsers = {}
+    results = {}
+
+    # Execute parsers
+    for k in ids:
+        if partial:
+            partials[k] = open('tmp/game{:03}.partial'.format(k), 'r')
+            remains[k] = open('tmp/game{:03}.remain'.format(k), 'rb')
+            parsers[k] = WorkingParser(remains[k], partials[k])
+        else:
+            records[k] = open('records/game{:03}.aoe2record'.format(k), 'rb')
+            partials[k] = open('tmp/game{:03}.partial'.format(k), 'w')
+            remains[k] = open('tmp/game{:03}.remain'.format(k), 'wb')
+            parsers[k] = GameRecordParser(records[k])
+
+        parsers[k].run()
+
+    # Search for next difference
+    all_same = True
+    while all_same and depth <= max_depth:
+        results = {}
+        prev = None
+        for k in ids:
+            results[k] = parsers[k].data.read(depth)
+            parsers[k].data.seek(-depth, 1)
+            if prev is not None and results[k] != prev:
+                all_same = False
+            prev = results[k]
+        depth += depth_step
+
+    # Read few more characters and close files
+    for k in ids:
+        print(k, pretty(parsers[k].data.read(depth+depth_after)))
+        parsers[k].data.seek(-(depth+depth_after), 1)
+
+        if not partial:
+            remains[k].write(parsers[k].data.read())
+            records[k].close()
+        remains[k].close()
+        partials[k].close()
