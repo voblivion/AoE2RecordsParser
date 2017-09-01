@@ -28,7 +28,7 @@ compatible with 5.1 (current) version of the game.
 
 Currently the projet contains 3 main files :
 - format5.1.json : my current description of 5.1 HD version records
-- format.html : and html view to display formats (format.html#5.1 for instance)
+- format.html : an html view to display formats (format.html#5.1 for instance)
 - aoe2.py : the python file I work with to understand step by step the composition of records. It will be the base of future python library.
 
 ## What this work is based on ?
