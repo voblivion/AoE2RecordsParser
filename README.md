@@ -20,7 +20,7 @@ Among many possibilities, a records parser could be used to :
 
 goto-bus-stop did an awesome job on his recanalyst project. However his parser is written in PHP (bwerk!) and doesn't offer a clean file
 structure description for helping other to write it in other languages. Moreover it relies on the position of a lot of redundant bytes
-and I feel it shouldn't be this dependant of unsafe information plus it is not yet fully functionnal with newest versions of the game. I
+and I feel it shouldn't be this dependant of unsafe information plus it is not yet fully functional with newest versions of the game. I
 then decided to rewrite this parser in python (better!) providing at the same occasion a clean structure description to anyone and
 compatible with 5.1 (current) version of the game.
 
